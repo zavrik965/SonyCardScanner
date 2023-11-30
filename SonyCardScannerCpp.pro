@@ -42,5 +42,5 @@ INCLUDEPATH += /usr/include/opencv4
 
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin
-else: unix:!android: target.path = /usr/bin/$${TARGET}
+else: unix:!android: target.path = /usr/bin
 !isEmpty(target.path): INSTALLS += target
