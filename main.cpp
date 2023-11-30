@@ -108,7 +108,7 @@ int main(int argc, char *argv[])
             }
         }
     }
-    if(args.keys().contains("cli") && !args.keys().contains("gui")) {
+    if(args.keys().contains("cli") && !args.keys().contains("gui") || !args.keys().contains("cli") && !args.keys().contains("gui")) {
         CliApp app(args);
         app.run();
     } else if(args.keys().contains("gui")) {
