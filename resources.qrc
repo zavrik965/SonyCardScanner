@@ -1,0 +1,16 @@
+<RCC>
+    <qresource prefix="/">
+        <file>icons/settings.svg</file>
+        <file>icons/icon.svg</file>
+        <file>icons/update.svg</file>
+        <file>icons/deselectAll.svg</file>
+        <file>icons/selectAll.svg</file>
+        <file>icons/selectDevice.svg</file>
+        <file>icons/icon.png</file>
+        <file>icons/info.svg</file>
+    </qresource>
+    <qresource prefix="/translates">
+        <file>SonyCardScanner_ru.qm</file>
+        <file>SonyCardScanner_en.qm</file>
+    </qresource>
+</RCC>

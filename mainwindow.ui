@@ -11,7 +11,11 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string>MainWindow</string>
+   <string>SonyCardScanner</string>
+  </property>
+  <property name="windowIcon">
+   <iconset resource="resources.qrc">
+    <normaloff>:/icons/icon.svg</normaloff>:/icons/icon.svg</iconset>
   </property>
   <widget class="QWidget" name="centralwidget">
    <layout class="QVBoxLayout" name="verticalLayout_2">
@@ -65,6 +69,24 @@
        </widget>
       </item>
       <item>
+       <widget class="QLabel" name="devicePath">
+        <property name="font">
+         <font>
+          <pointsize>14</pointsize>
+         </font>
+        </property>
+        <property name="text">
+         <string>Устройство: </string>
+        </property>
+        <property name="margin">
+         <number>5</number>
+        </property>
+        <property name="openExternalLinks">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+      <item>
        <widget class="QLabel" name="directoryPath">
         <property name="font">
          <font>
@@ -72,7 +94,7 @@
          </font>
         </property>
         <property name="text">
-         <string>Директория: </string>
+         <string>Директория для сохранения: </string>
         </property>
         <property name="wordWrap">
          <bool>false</bool>
@@ -113,24 +135,23 @@
      <x>0</x>
      <y>0</y>
      <width>800</width>
-     <height>25</height>
+     <height>22</height>
     </rect>
    </property>
    <widget class="QMenu" name="menu">
     <property name="title">
      <string>Файл</string>
     </property>
+    <addaction name="selectDevice"/>
     <addaction name="scanAction"/>
-   </widget>
-   <widget class="QMenu" name="menu_2">
-    <property name="title">
-     <string>Настройки</string>
-    </property>
+    <addaction name="separator"/>
+    <addaction name="settings"/>
    </widget>
    <widget class="QMenu" name="menu_3">
     <property name="title">
-     <string>О программе</string>
+     <string>Справка</string>
     </property>
+    <addaction name="aboutAction"/>
    </widget>
    <widget class="QMenu" name="menu_4">
     <property name="title">
@@ -141,11 +162,14 @@
    </widget>
    <addaction name="menu"/>
    <addaction name="menu_4"/>
-   <addaction name="menu_2"/>
    <addaction name="menu_3"/>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
   <action name="scanAction">
+   <property name="icon">
+    <iconset resource="resources.qrc">
+     <normaloff>:/icons/update.svg</normaloff>:/icons/update.svg</iconset>
+   </property>
    <property name="text">
     <string>Сканировать</string>
    </property>
@@ -154,6 +178,10 @@
    </property>
   </action>
   <action name="selectAction">
+   <property name="icon">
+    <iconset resource="resources.qrc">
+     <normaloff>:/icons/selectAll.svg</normaloff>:/icons/selectAll.svg</iconset>
+   </property>
    <property name="text">
     <string>Выбрать всё</string>
    </property>
@@ -162,11 +190,47 @@
    </property>
   </action>
   <action name="deselectAction">
+   <property name="icon">
+    <iconset resource="resources.qrc">
+     <normaloff>:/icons/deselectAll.svg</normaloff>:/icons/deselectAll.svg</iconset>
+   </property>
    <property name="text">
     <string>Убрать всё</string>
    </property>
   </action>
+  <action name="settings">
+   <property name="icon">
+    <iconset resource="resources.qrc">
+     <normaloff>:/icons/settings.svg</normaloff>:/icons/settings.svg</iconset>
+   </property>
+   <property name="text">
+    <string>Настройки</string>
+   </property>
+   <property name="toolTip">
+    <string>Настройки</string>
+   </property>
+  </action>
+  <action name="selectDevice">
+   <property name="icon">
+    <iconset resource="resources.qrc">
+     <normaloff>:/icons/selectDevice.svg</normaloff>:/icons/selectDevice.svg</iconset>
+   </property>
+   <property name="text">
+    <string>Выбрать устройство</string>
+   </property>
+  </action>
+  <action name="aboutAction">
+   <property name="icon">
+    <iconset resource="resources.qrc">
+     <normaloff>:/icons/info.svg</normaloff>:/icons/info.svg</iconset>
+   </property>
+   <property name="text">
+    <string>О программе</string>
+   </property>
+  </action>
  </widget>
- <resources/>
+ <resources>
+  <include location="resources.qrc"/>
+ </resources>
  <connections/>
 </ui>

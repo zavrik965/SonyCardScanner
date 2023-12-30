@@ -23,15 +23,18 @@ SOURCES += \
     cliapp.cpp \
     main.cpp \
     mainwindow.cpp \
-    photowidget.cpp
+    photowidget.cpp \
+    preferencesdialog.cpp
 
 HEADERS += \
     cliapp.h \
     mainwindow.h \
-    photowidget.h
+    photowidget.h \
+    preferencesdialog.h
 
 FORMS += \
-    mainwindow.ui
+    mainwindow.ui \
+    preferencesdialog.ui
 
 LIBS += \
     -lraw
@@ -44,3 +47,10 @@ INCLUDEPATH += /usr/include/opencv4
 qnx: target.path = /tmp/$${TARGET}/bin
 else: unix:!android: target.path = /usr/bin
 !isEmpty(target.path): INSTALLS += target
+
+RESOURCES += \
+    resources.qrc
+
+TRANSLATIONS += \
+    SonyCardScanner_ru.ts \
+    SonyCardScanner_en.ts

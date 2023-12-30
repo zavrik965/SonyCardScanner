@@ -12,7 +12,6 @@
 #include "cliapp.h"
 #include <QDebug>
 #include <QDir>
-#include <QProcessEnvironment>
 #include <QTextStream>
 #include <QDateTime>
 
@@ -101,10 +100,10 @@ CliApp::CliApp(QMap<QString,QStringList> args) {
             this->needed_types = args.value(key);
             break;
         case 1:
-            this->output_dir = args.value(key)[0];
+            this->source_dir = args.value(key)[0];
             break;
         case 2:
-            this->source_dir = args.value(key)[0];
+            this->output_dir = args.value(key)[0];
             break;
         case 3:
             this->is_viewing = true;
@@ -129,16 +128,17 @@ CliApp::CliApp(QMap<QString,QStringList> args) {
             delimeter="/";
             break;
         }
-        this->output_dir = QDir::homePath() + delimeter + "Изображения" + delimeter + "Sony" + delimeter + QDateTime::currentDateTime().toString("dd-MM-yyyy-HH-mm-ss");
+        this->out_directory_root_path = QDir::homePath() + delimeter + "Изображения" + delimeter + "Sony" + delimeter;
+        this->output_dir = this->out_directory_root_path + QDateTime::currentDateTime().toString("dd-MM-yyyy-HH-mm-ss");
     }
-    this->search_path();
+    this->search_path(false);
 }
 
-void CliApp::search_path() {
+void CliApp::search_path(bool force) {
     QStringList cases;
     cases << "linux" << "windows" << "macos";
-    if(this->source_dir != "") {
-        if(!QDir(this->source_dir).exists()) {
+    if(this->source_dir != "" && !force) {
+        if(!QDir(this->source_dir).exists() || _recurent_search_path(this->source_dir) != this->source_dir) {
             qCritical() << "Устройства не найдены, попробуйте указать путь вручную!";
             exit(1);
         }
@@ -146,17 +146,24 @@ void CliApp::search_path() {
     }
     switch(cases.indexOf(osVersion())) {
     case 0:
-        this->source_dir = _recurent_search_path("/run/media/" + QProcessEnvironment::systemEnvironment().value("USER") + "/");
-        if(this->source_dir == "") {
-            qCritical() << "Устройства не найдены, попробуйте указать путь вручную!";
-            exit(1);
-        }
+        this->device_root_path = "/run/media/" + QProcessEnvironment::systemEnvironment().value("USER") + "/";
         break;
     case 1:
+        this->device_root_path = "D:\\";
+        break;
     case 2:
+        this->device_root_path = "/Volumes/";
+        break;
     default:
         qInfo() << "Автоопределение устройства не работает в Вашей системе. Попробуйте ввести путь вручную";
         exit(0);
+    }
+    this->source_dir = _recurent_search_path(this->device_root_path);
+    if(this->source_dir == "" && !this->forGui) {
+        qCritical() << "Устройства не найдены, попробуйте указать путь вручную!";
+        exit(1);
+    } else if(this->source_dir == "") {
+        qCritical() << "Устройства не найдены, попробуйте указать путь вручную!";
     }
 }
 
@@ -319,4 +326,37 @@ QString CliApp::getDirectoryPath() {
 }
 void CliApp::setDirectoryPath(QString path) {
     this->output_dir = path;
+}
+
+void CliApp::setDevicePath(QString path) {
+    this->device_root_path = path;
+    this->search_path(true);
+}
+
+QString CliApp::getSourceDir() {
+    return this->source_dir;
+}
+
+QString CliApp::getDeviceRootPath() {
+    return this->device_root_path;
+}
+
+void CliApp::setDeviceRootPath(QString path) {
+    this->device_root_path = path;
+}
+
+QString CliApp::getOutDirectoryRootPath() {
+    return this->out_directory_root_path;
+}
+
+void CliApp::setOutDirectoryRootPath(QString path) {
+    this->out_directory_root_path = path;
+}
+
+QString CliApp::getLanguage() {
+    return this->language;
+}
+
+void CliApp::setLanguage(QString language) {
+    this->language = language;
 }

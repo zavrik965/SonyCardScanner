@@ -16,6 +16,7 @@
 #include <stdbool.h>
 #include <QMap>
 #include <QProgressBar>
+#include <QProcessEnvironment>
 
 class CliApp
 {
@@ -28,6 +29,15 @@ public:
     QMap<QString,QStringList> getFoundedFiles();
     QString getDirectoryPath();
     void setDirectoryPath(QString path);
+    void setDevicePath(QString path);
+    QString getSourceDir();
+    QString getDeviceRootPath();
+    void setDeviceRootPath(QString path);
+    QString getOutDirectoryRootPath();
+    void setOutDirectoryRootPath(QString path);
+    QString getLanguage();
+    void setLanguage(QString language);
+
 private:
     QString output_dir="";
     QString source_dir="";
@@ -35,7 +45,10 @@ private:
     bool is_viewing = false;
     bool forGui = false;
     QMap<QString,QStringList> founded_files;
-    void search_path();
+    QString device_root_path="";
+    QString out_directory_root_path="";
+    QString language="Русский";
+    void search_path(bool force);
     void analyzer();
 };
 

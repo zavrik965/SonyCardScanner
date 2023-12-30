@@ -16,9 +16,31 @@
 #include <QFile>
 #include <QFileInfo>
 #include <QFileDialog>
+#include <QCloseEvent>
+#include <QDateTime>
+#include <QJsonDocument>
+#include <QMessageBox>
 #include <libraw/libraw.h>
 #include <opencv4/opencv2/core.hpp>
 #include <opencv4/opencv2/videoio.hpp>
+
+QString OSVersion()
+{
+    static QString osVersion;
+    if(osVersion.isEmpty())
+    {
+#if defined(Q_OS_LINUX)
+        osVersion = "linux";
+#elif defined(Q_OS_MAC)
+        osVersion = "macos";
+#elif defined(Q_OS_WIN)
+        osVersion = "windows";
+#else
+        osVersion = "unknown";
+#endif
+    }
+    return osVersion;
+}
 
 MainWindow::MainWindow(QMap<QString,QStringList> args, QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWindow)
 {
@@ -28,6 +50,73 @@ MainWindow::MainWindow(QMap<QString,QStringList> args, QWidget *parent) : QMainW
     for(QString file_type : this->cliapp->getNeededTypes()) {
         this->rendered_files[file_type] = QList({QList<photoList *>({})});
     }
+    QString delimeter;
+    QStringList cases;
+    cases << "linux" << "windows" << "macos";
+    switch(cases.indexOf(OSVersion())) {
+    case 0:
+        this->configPath=QDir::homePath() + "/.config/SonyCardScanner/";
+        delimeter="/";
+        break;
+    case 1:
+        this->configPath="C:\\Program Files\\SonyCardScanner\\";
+        delimeter="\\";
+        break;
+    case 2:
+        this->configPath=QDir::homePath() + "/Library/Preferences/SonyCardScanner/";
+        delimeter="/";
+        break;
+    }
+    if(QFileInfo(configPath + "preferences.conf").exists()) {
+        QString data;
+        QFile json_file;
+        json_file.setFileName(configPath + "preferences.conf");
+        json_file.open(QIODevice::ReadOnly | QIODevice::Text);
+        data = json_file.readAll();
+        json_file.close();
+        preferences = QJsonDocument::fromJson(data.toUtf8()).object();
+        this->cliapp->setDeviceRootPath(preferences["sourceDir"].toString());
+        this->cliapp->setLanguage(preferences["language"].toString());
+        this->cliapp->setOutDirectoryRootPath(preferences["outputDir"].toString());
+        cases = QStringList({});
+        cases << "Русский" << "English";
+        switch (cases.indexOf(preferences["language"].toString())) {
+        case 0:
+            this->translator.load(":/translates/SonyCardScanner_ru.qm");
+            break;
+        case 1:
+            this->translator.load(":/translates/SonyCardScanner_en.qm");
+            break;
+        }
+        qApp->installTranslator(&translator);
+    } else {
+        cases = QStringList({});
+        cases << "ru_RU" << "en_US";
+        switch (cases.indexOf(QLocale::system().name())) {
+        case 0:
+            this->cliapp->setLanguage("Русский");
+            break;
+        case 1:
+            this->cliapp->setLanguage("English");
+            break;
+        default:
+            this->cliapp->setLanguage("Русский");
+            break;
+        }
+        QDir().mkpath(configPath);
+        preferences["sourceDir"] = this->cliapp->getDeviceRootPath();
+        preferences["outputDir"] = this->cliapp->getOutDirectoryRootPath();
+        preferences["language"] = this->cliapp->getLanguage();
+
+        QFile json_file;
+        json_file.setFileName(configPath + "preferences.conf");
+        json_file.open(QIODevice::WriteOnly);
+        json_file.write(QJsonDocument(preferences).toJson(QJsonDocument::Indented));
+        json_file.close();
+
+    }
+
+
     ui->arwTableWidget->horizontalHeader()->setSectionResizeMode(QHeaderView::ResizeMode::Stretch);
     ui->arwTableWidget->horizontalHeader()->setVisible(false);
     ui->arwTableWidget->verticalHeader()->setVisible(false);
@@ -49,7 +138,12 @@ MainWindow::MainWindow(QMap<QString,QStringList> args, QWidget *parent) : QMainW
     ui->statusbar->setSizeGripEnabled(false);
     ui->statusbar->addPermanentWidget(progressBar, 1);
 
-    ui->directoryPath->setText("Директория: " + this->cliapp->getDirectoryPath());
+    ui->directoryPath->setText(tr("Директория для сохранения: ") + this->cliapp->getDirectoryPath());
+    ui->devicePath->setText(tr("Устройство: ") + this->cliapp->getSourceDir());
+    QIcon icon = QIcon(":/icons/icon.png");
+    this->trayIcon = new QSystemTrayIcon(this);
+    this->trayIcon->setIcon(icon);
+    this->trayIcon->show();
 }
 
 MainWindow::~MainWindow()
@@ -57,6 +151,17 @@ MainWindow::~MainWindow()
     delete ui;
 }
 
+void MainWindow::closeEvent(QCloseEvent * event) {
+    this->trayIcon->hide();
+    event->accept();
+}
+
+void MainWindow::changeEvent(QEvent *event)
+{
+    if (event->type() == QEvent::LanguageChange) {
+        ui->retranslateUi(this);
+    }
+}
 
 void MainWindow::on_arwTableWidget_cellDoubleClicked(int row, int column)
 {
@@ -88,6 +193,7 @@ void MainWindow::on_mtsTableWidget_cellDoubleClicked(int row, int column)
         this->rendered_files["mts"][row][column]->choosed = false;
         this->rendered_files["mts"][row][column]->photowidget->setChoosed(false);
     }
+
 }
 
 void MainWindow::on_arwTableWidget_itemSelectionChanged()
@@ -415,11 +521,11 @@ void MainWindow::on_deselectAction_triggered()
 void MainWindow::on_chooseDirectoryButton_clicked()
 {
     QFileDialog dialog;
-    QString output_dir = dialog.getExistingDirectory(this, "Select directory", QDir::homePath());
+    QString output_dir = dialog.getExistingDirectory(this, tr("Выбор директории"), QDir::homePath());
     if(output_dir != "") {
         this->cliapp->setDirectoryPath(output_dir);
     }
-    ui->directoryPath->setText("Директория: " + this->cliapp->getDirectoryPath());
+    ui->directoryPath->setText(tr("Директория для сохранения: ") + this->cliapp->getDirectoryPath());
 }
 
 
@@ -439,5 +545,83 @@ void MainWindow::on_saveButton_clicked()
         }
     }
     this->cliapp->save(pack, this->progressBar);
+}
+
+
+void MainWindow::on_selectDevice_triggered()
+{
+    QIcon icon = QIcon(":/icons/icon.png");
+    QFileDialog dialog;
+    QString device_dir = dialog.getExistingDirectory(this, tr("Выбор директории устройства"), QDir::homePath());
+    if(device_dir != "") {
+        this->cliapp->setDevicePath(device_dir);
+    }
+    if(this->cliapp->getSourceDir() != "") {
+        this->trayIcon->showMessage(tr("Выбор устройства"), tr("Устройство успешно обнаружено"), icon, 3000);
+    } else {
+        this->trayIcon->showMessage(tr("Выбор устройства"), tr("Устройство не обнаружено. Проверьте пожалуйста путь"), icon, 3000);
+    }
+    ui->devicePath->setText(tr("Устройство: ") + this->cliapp->getSourceDir());
+}
+
+
+void MainWindow::on_settings_triggered()
+{
+    PreferencesDialog * preferences_dialog = new PreferencesDialog();
+    preferences_dialog->setLanguages(QStringList({"English", "Русский"}));
+    preferences_dialog->setLanguage(this->preferences["language"].toString());
+    QString standardSource;
+    QString delimeter;
+    QStringList cases;
+    cases << "linux" << "windows" << "macos";
+    switch(cases.indexOf(OSVersion())) {
+    case 0:
+        delimeter="/";
+        break;
+    case 1:
+        delimeter="\\";
+        break;
+    case 2:
+
+        delimeter="/";
+        break;
+    }
+    preferences_dialog->setStandardSourceDir(preferences["sourceDir"].toString());
+    preferences_dialog->setStandardOutputDir(preferences["outputDir"].toString());
+
+    int answer = preferences_dialog->exec();
+    if(answer == QDialog::Accepted) {
+        preferences["language"] = preferences_dialog->getLanguage();
+        preferences["sourceDir"] = preferences_dialog->getStandardSourceDir();
+        preferences["outputDir"] = preferences_dialog->getStandardOutputDir();
+        QFile file;
+        file.setFileName(configPath + "preferences.conf");
+        file.open(QIODevice::WriteOnly);
+        file.write(QJsonDocument(preferences).toJson(QJsonDocument::Indented));
+        file.close();
+        cases = QStringList({});
+        cases << "Русский" << "English";
+        switch (cases.indexOf(preferences["language"].toString())) {
+        case 0:
+            this->translator.load(":/translates/SonyCardScanner_ru.qm");
+            break;
+        case 1:
+            this->translator.load(":/translates/SonyCardScanner_en.qm");
+            break;
+        }
+    }
+    qApp->installTranslator(&translator);
+    delete preferences_dialog;
+}
+
+
+void MainWindow::on_aboutAction_triggered()
+{
+    QMessageBox msgBox(this);
+    msgBox.setWindowTitle(tr("О приложении"));
+    msgBox.setTextFormat(Qt::RichText);
+    msgBox.setIconPixmap(QPixmap(":/icons/icon.svg"));
+    msgBox.setText(tr("SonyCardScanner - утилита для сканирования папок на карте памяти фотокамер Sony.<br>SonyCardScanner — свободная программа, распространяемая под лицензией GPL3.<br>SonyCardScanner распространяется в надежде, что она будет полезной, но БЕЗО ВСЯКИХ ГАРАНТИЙ даже без неявной гарантии ТОВАРНОГО ВИДА или ПРИГОДНОСТИ ДЛЯ ОПРЕДЕЛЕННЫХ ЦЕЛЕЙ.<br>Автор:<br><a href='mailto:zaz965@stm32f0.ru'>ZAvrikDinozavrik</a><br>Исходный код:<br><a href='https://git.alexavr.ru/ZAvrikDinozavrik/SonyCardScanner'>https://git.alexavr.ru/ZAvrikDinozavrik/SonyCardScanner</a>"));
+    msgBox.exec();
 }
 

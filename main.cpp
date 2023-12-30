@@ -17,6 +17,7 @@
 #include <QStringList>
 #include <QMap>
 #include <QDebug>
+#include <QTranslator>
 
 void printHelp() {
     qInfo() << "usage: SonyCardScanner [-h] [-t {mp4,mts,jpg,arw}] [-p PATH] [-d DIR] [-v] [-c | -g]\n";

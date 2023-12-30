@@ -13,9 +13,13 @@
 #define MAINWINDOW_H
 
 #include <QMainWindow>
+#include <QProgressBar>
+#include <QSystemTrayIcon>
+#include <QJsonObject>
+#include <QTranslator>
 #include "cliapp.h"
 #include "photowidget.h"
-#include <QProgressBar>
+#include "preferencesdialog.h"
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
@@ -49,6 +53,12 @@ private slots:
 
     void on_saveButton_clicked();
 
+    void on_selectDevice_triggered();
+
+    void on_settings_triggered();
+
+    void on_aboutAction_triggered();
+
 private:
     Ui::MainWindow *ui;
     struct photoList {
@@ -59,5 +69,12 @@ private:
     QMap<QString,QList<QList<photoList *>>> rendered_files;
     QProgressBar* progressBar = new QProgressBar();
     CliApp* cliapp;
+    QSystemTrayIcon *trayIcon;
+    QString configPath;
+    QJsonObject preferences;
+    QTranslator translator;
+protected:
+    void closeEvent(QCloseEvent * event);
+    void changeEvent(QEvent * event) override;
 };
 #endif // MAINWINDOW_H
