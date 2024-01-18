@@ -138,8 +138,8 @@ MainWindow::MainWindow(QMap<QString,QStringList> args, QWidget *parent) : QMainW
     ui->statusbar->setSizeGripEnabled(false);
     ui->statusbar->addPermanentWidget(progressBar, 1);
 
-    ui->directoryPath->setText(tr("Директория для сохранения: ") + this->cliapp->getDirectoryPath());
-    ui->devicePath->setText(tr("Устройство: ") + this->cliapp->getSourceDir());
+    ui->directoryPath->setText(this->cliapp->getDirectoryPath());
+    ui->devicePath->setText(this->cliapp->getSourceDir());
     QIcon icon = QIcon(":/icons/icon.png");
     this->trayIcon = new QSystemTrayIcon(this);
     this->trayIcon->setIcon(icon);
@@ -525,7 +525,7 @@ void MainWindow::on_chooseDirectoryButton_clicked()
     if(output_dir != "") {
         this->cliapp->setDirectoryPath(output_dir);
     }
-    ui->directoryPath->setText(tr("Директория для сохранения: ") + this->cliapp->getDirectoryPath());
+    ui->directoryPath->setText(this->cliapp->getDirectoryPath());
 }
 
 
@@ -561,7 +561,7 @@ void MainWindow::on_selectDevice_triggered()
     } else {
         this->trayIcon->showMessage(tr("Выбор устройства"), tr("Устройство не обнаружено. Проверьте пожалуйста путь"), icon, 3000);
     }
-    ui->devicePath->setText(tr("Устройство: ") + this->cliapp->getSourceDir());
+    ui->devicePath->setText(this->cliapp->getSourceDir());
 }
 
 

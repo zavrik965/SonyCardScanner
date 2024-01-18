@@ -29,78 +29,75 @@
         <translation>MP4</translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="79"/>
-        <location filename="mainwindow.cpp" line="142"/>
-        <location filename="mainwindow.cpp" line="564"/>
+        <location filename="mainwindow.ui" line="90"/>
         <source>Устройство: </source>
         <translation>Device: </translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="97"/>
+        <location filename="mainwindow.ui" line="133"/>
         <location filename="mainwindow.cpp" line="141"/>
-        <location filename="mainwindow.cpp" line="528"/>
         <source>Директория для сохранения: </source>
         <translation>Directory to save: </translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="115"/>
+        <location filename="mainwindow.ui" line="165"/>
         <source>Выбрать директорию</source>
         <translation>Select directory</translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="122"/>
+        <location filename="mainwindow.ui" line="172"/>
         <source>Сохранить</source>
         <translation>Save</translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="143"/>
+        <location filename="mainwindow.ui" line="193"/>
         <source>Файл</source>
         <translation>File</translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="152"/>
+        <location filename="mainwindow.ui" line="202"/>
         <source>Справка</source>
         <translation>Help</translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="158"/>
+        <location filename="mainwindow.ui" line="208"/>
         <source>Правка</source>
         <translation>Edit</translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="174"/>
+        <location filename="mainwindow.ui" line="224"/>
         <source>Сканировать</source>
         <translation>Scan</translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="177"/>
+        <location filename="mainwindow.ui" line="227"/>
         <source>Ctrl+U</source>
         <translation>Ctrl+U</translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="186"/>
-        <location filename="mainwindow.ui" line="189"/>
+        <location filename="mainwindow.ui" line="236"/>
+        <location filename="mainwindow.ui" line="239"/>
         <source>Выбрать всё</source>
         <translation>Select all</translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="198"/>
+        <location filename="mainwindow.ui" line="248"/>
         <source>Убрать всё</source>
         <translation>Unselect all</translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="207"/>
-        <location filename="mainwindow.ui" line="210"/>
+        <location filename="mainwindow.ui" line="257"/>
+        <location filename="mainwindow.ui" line="260"/>
         <source>Настройки</source>
         <translation>Settings</translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="219"/>
+        <location filename="mainwindow.ui" line="269"/>
         <source>Выбрать устройство</source>
         <translation>Select Device</translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="228"/>
+        <location filename="mainwindow.ui" line="278"/>
         <source>О программе</source>
         <translation>About</translation>
     </message>
