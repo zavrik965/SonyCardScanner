@@ -40,8 +40,12 @@ QString _recurent_search_path(QString path){
         QFileInfo fileInfo = files.at(i);
         QStringList fileInfoNames;
         if(fileInfo.fileName() != "." && fileInfo.fileName() != ".." && fileInfo.isDir()) {
-            return _recurent_search_path(fileInfo.absoluteFilePath());
-        } else if(fileInfo.isFile() && fileInfo.fileName() == "autorun.inf") {
+            QString temp_path = _recurent_search_path(fileInfo.absoluteFilePath());
+            if(temp_path != "") {
+                return temp_path;
+            }
+        }
+        if(fileInfo.isFile() && fileInfo.fileName() == "autorun.inf") {
             for(QFileInfo info : files){
                 fileInfoNames.append(info.fileName());
             }
